@@ -16,6 +16,34 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Inject Hugging Face Spaces YAML frontmatter for sync branch
+        run: |
+          python -c '
+          from pathlib import Path
+          frontmatter = """---
+          title: RetinaX
+          emoji: "\U0001F441\uFE0F"
+          colorFrom: indigo
+          colorTo: teal
+          sdk: gradio
+          sdk_version: 5.9.1
+          python_version: "3.12"
+          app_file: run.py
+          pinned: false
+          license: mit
+          ---
+
+          """
+          readme = Path("README.md")
+          text = readme.read_text(encoding="utf-8")
+          if not text.lstrip().startswith("---"):
+              readme.write_text("\n".join(line.lstrip() for line in frontmatter.splitlines()) + "\n" + text, encoding="utf-8")
+          '
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "chore: add Hugging Face Spaces frontmatter" || true
+
       - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}

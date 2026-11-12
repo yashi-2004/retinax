@@ -1,0 +1,51 @@
+# Python / Virtualenv
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Testing & Caching
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Datasets & Large Binary Artifacts (Never commit medical datasets or large weights)
+data/raw/aptos/*
+data/raw/eyepacs/*
+data/raw/idrid/*
+data/raw/medmnist/*
+data/raw/synthetic_demo/*
+!data/raw/*/.gitkeep
+data/processed/images/*
+!data/processed/images/.gitkeep
+data/processed/splits/*
+!data/processed/splits/.gitkeep
+data/manifests/*.csv
+data/manifests/*.json
+!data/manifests/.gitkeep
+
+# Checkpoints, TensorBoard, Cache & Generated Reports
+checkpoints/*.pt
+checkpoints/*.pth
+checkpoints/*.safetensors
+!checkpoints/.gitkeep
+experiments/runs/
+experiments/cache/
+experiments/tensorboard/
+experiments/registry.json
+!experiments/.gitkeep
+reports/generated/
+!reports/.gitkeep
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/
+*.log

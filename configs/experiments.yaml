@@ -1,0 +1,51 @@
+# RetinaX Structured Research Experiment Suite (Experiments A - J)
+experiments:
+  exp_a_baseline:
+    title: "Experiment A: Foundational CNN Baselines"
+    hypothesis: "Pretrained convolutional architectures (ResNet18, EfficientNet-B0) achieve higher QWK and minority-class recall than a shallow CNN trained from scratch."
+    models: ["custom_cnn", "resnet18", "efficientnet_b0"]
+    training_mode: "partial_finetune"
+
+  exp_b_training_strategy:
+    title: "Experiment B: Transfer Learning Strategy Comparison"
+    hypothesis: "Partial or full fine-tuning outperforms frozen ImageNet features on retinal grading by adapting high-level filters to microvascular lesions, at increased overfitting risk on small data."
+    model: "resnet18"
+    modes: ["scratch", "frozen", "partial_finetune", "full_finetune"]
+
+  exp_c_label_efficiency:
+    title: "Experiment C: Label Efficiency Under Limited Supervision"
+    hypothesis: "Transfer learning and foundation-model embeddings retain substantially stronger performance at 10% and 25% labelled data than from-scratch CNNs."
+    fractions: [0.10, 0.25, 0.50, 1.00]
+    models: ["custom_cnn", "resnet18", "dinov2_probe"]
+
+  exp_d_architecture_comparison:
+    title: "Experiment D: CNN vs Vision Transformer vs Self-Supervised Representations"
+    hypothesis: "Self-supervised and Vision Transformer representations capture broader global retinal structure, while inductive biases in CNNs benefit small-sample regimes."
+    models: ["resnet18", "vit_tiny", "simclr_cnn", "dinov2_probe"]
+
+  exp_e_preprocessing_ablation:
+    title: "Experiment E: Fundus Preprocessing & Augmentation Ablation"
+    hypothesis: "FOV cropping and moderate CLAHE can reduce peripheral border artifacts, whereas aggressive contrast enhancement may distort subtle colour cues."
+    presets: ["raw_resize", "fov_crop", "fov_clahe_norm", "ben_graham"]
+
+  exp_f_class_imbalance:
+    title: "Experiment F: Imbalance-Handling Loss & Sampling Ablation"
+    hypothesis: "Class-weighted cross-entropy and focal loss improve Macro-F1 and rare-grade sensitivity compared to unweighted cross-entropy, though potentially shifting probability calibration."
+    losses: ["ce", "weighted_ce", "focal", "label_smoothing"]
+
+  exp_g_explainability:
+    title: "Experiment G: Post-hoc Visual Attribution Analysis"
+    hypothesis: "Grad-CAM and Integrated Gradients highlight retinal vascular/lesion regions in many correct predictions, but also reveal shortcut focus or diffuse attribution on misclassified and uncertain cases."
+    methods: ["gradcam", "gradcam_pp", "integrated_gradients", "occlusion"]
+
+  exp_h_calibration:
+    title: "Experiment H: Probability Calibration & Temperature Scaling"
+    hypothesis: "Post-hoc temperature scaling on a held-out calibration split reduces Expected Calibration Error and NLL without altering top-1 accuracy."
+
+  exp_i_cross_dataset:
+    title: "Experiment I: Cross-Dataset Generalisation & Domain Shift"
+    hypothesis: "Models trained on one acquisition cohort suffer measurable QWK and calibration degradation on an external cohort with shifted colour, brightness, and quality distributions."
+
+  exp_j_selective_prediction:
+    title: "Experiment J: Uncertainty-Aware Selective Prediction & Conformal Sets"
+    hypothesis: "Abstaining on high-entropy, wide-conformal-set, or low-image-quality inputs lowers selective risk monotonically as coverage decreases."

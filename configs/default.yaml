@@ -1,0 +1,113 @@
+# RetinaX Default Research Configuration (CPU-Optimized for Intel i5 / 8 GB RAM)
+project:
+  name: "RetinaX"
+  version: "0.1.0"
+  seed: 42
+  num_threads: 4
+  device: "auto"  # Resolves cleanly to "cpu" when CUDA unavailable; mixed precision disabled on CPU
+
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  manifests_dir: "data/manifests"
+  checkpoints_dir: "checkpoints"
+  experiments_dir: "experiments"
+  reports_dir: "reports/generated"
+
+dataset:
+  primary_name: "aptos"
+  external_name: "eyepacs"
+  num_classes: 5
+  class_names:
+    - "No DR"
+    - "Mild"
+    - "Moderate"
+    - "Severe"
+    - "Proliferative DR"
+  splits:
+    train_ratio: 0.65
+    val_ratio: 0.125
+    cal_ratio: 0.125
+    test_ratio: 0.10
+  near_duplicate_hamming_threshold: 4
+  eyepacs_max_samples: 500  # Memory-efficient bounded subset for local CPU validation
+
+preprocessing:
+  image_size: 224
+  preset: "fov_clahe_norm"  # Options: raw_resize, fov_crop, ben_graham, fov_clahe_norm, green_channel
+  apply_fov_crop: true
+  apply_clahe: true
+  clahe_clip_limit: 2.0
+  clahe_tile_grid: 8
+  apply_illumination_correction: false
+  normalisation: "imagenet"  # Options: imagenet, zero_one, zscore_fov
+  augmentation_policy: "light_clinical"  # Options: none, light_clinical, moderate_clinical, domain_shift_robust
+
+quality_assessment:
+  blur_laplacian_threshold: 60.0
+  min_brightness: 25.0
+  max_brightness: 220.0
+  min_contrast_rms: 18.0
+  min_fov_coverage: 0.35
+
+training:
+  batch_size: 8
+  num_workers: 0
+  epochs: 15
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  optimizer: "adamw"  # adam, adamw, sgd
+  scheduler: "cosine"  # cosine, plateau, step, none
+  loss: "weighted_ce"  # ce, weighted_ce, focal, label_smoothing
+  focal_gamma: 2.0
+  label_smoothing: 0.05
+  use_weighted_sampler: false
+  gradient_clip_norm: 1.0
+  early_stopping_patience: 4
+  mixed_precision: false  # Automatically ignored unless CUDA hardware is verified
+
+models:
+  custom_cnn:
+    num_blocks: 4
+    base_channels: 16
+    channel_multiplier: 2
+    kernel_size: 3
+    stride: 1
+    padding: 1
+    use_batchnorm: true
+    pooling: "max"
+    dropout: 0.3
+    fc_dims: [128]
+    activation: "relu"
+  resnet18:
+    mode: "partial_finetune"  # scratch, frozen, partial_finetune, full_finetune
+    dropout: 0.3
+  efficientnet_b0:
+    mode: "partial_finetune"
+    dropout: 0.3
+  vit:
+    backbone: "vit_tiny_patch16_224"
+    mode: "frozen"
+    dropout: 0.2
+  simclr:
+    encoder: "custom_cnn"
+    projection_dim: 64
+    temperature: 0.5
+    ssl_epochs: 10
+    batch_size: 16
+  dinov2:
+    backbone: "vit_small_patch14_dinov2.lvd142m"
+    probe_type: "logistic"  # logistic, mlp
+  biomedclip:
+    model_name: "hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"
+    enabled: false  # Optional; gracefully skipped if weights or open_clip are unavailable
+
+uncertainty:
+  mc_dropout_passes: 12
+  conformal_alpha: 0.10  # Target 90% marginal coverage (1 - alpha)
+  conformal_method: "aps"  # lac, aps
+  abstention:
+    min_confidence: 0.45
+    max_entropy: 1.25
+    max_conformal_set_size: 3
+    min_quality_score: 30.0

@@ -1,0 +1,24 @@
+name: Sync Gradio App to Hugging Face Spaces
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    # Runs only after HF_TOKEN and HF_SPACE_REPO repository secrets/variables are configured
+    if: ${{ vars.HF_SPACE_REPO != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE_REPO: ${{ vars.HF_SPACE_REPO }}
+        run: |
+          git push --force https://hf_user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE_REPO} HEAD:main

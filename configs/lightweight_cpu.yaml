@@ -1,0 +1,59 @@
+# RetinaX Lightweight CPU Preset (Fast Execution on 4-core Intel i5 / 8 GB RAM)
+project:
+  name: "RetinaX"
+  version: "0.1.0"
+  seed: 42
+  num_threads: 4
+  device: "cpu"
+
+preprocessing:
+  image_size: 128
+  preset: "fov_clahe_norm"
+  apply_fov_crop: true
+  apply_clahe: true
+  normalisation: "imagenet"
+  augmentation_policy: "light_clinical"
+
+training:
+  batch_size: 8
+  num_workers: 0
+  epochs: 4
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+  optimizer: "adamw"
+  scheduler: "cosine"
+  loss: "weighted_ce"
+  early_stopping_patience: 2
+  gradient_clip_norm: 1.0
+  mixed_precision: false
+
+models:
+  custom_cnn:
+    num_blocks: 3
+    base_channels: 16
+    channel_multiplier: 2
+    kernel_size: 3
+    dropout: 0.25
+    fc_dims: [64]
+    activation: "relu"
+  resnet18:
+    mode: "frozen"
+    dropout: 0.25
+  efficientnet_b0:
+    mode: "frozen"
+    dropout: 0.25
+  vit:
+    backbone: "vit_tiny_patch16_224"
+    mode: "frozen"
+    dropout: 0.2
+  simclr:
+    encoder: "custom_cnn"
+    projection_dim: 32
+    temperature: 0.5
+    ssl_epochs: 3
+    batch_size: 8
+
+uncertainty:
+  mc_dropout_passes: 8
+  conformal_alpha: 0.10
+  conformal_method: "aps"

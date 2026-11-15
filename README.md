@@ -1,5 +1,19 @@
+---
+title: RetinaX — Retinal Image Intelligence Research Lab
+emoji: 👁️
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: 5.9.1
+app_file: run.py
+pinned: false
+license: mit
+---
+
 # RetinaX — A Research-Driven Framework for Robust and Trustworthy Retinal Image Intelligence
 
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Live%20Demo-blue)](https://huggingface.co/spaces/yashiiiiii/retinax)
+[![GitHub Pages](https://img.shields.io/badge/Research%20Report-GitHub%20Pages-teal)](https://yashi-2004.github.io/retinax/)
 [![RetinaX CI](https://github.com/yashi-2004/retinax/actions/workflows/ci.yml/badge.svg)](https://github.com/yashi-2004/retinax/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-teal.svg)](pyproject.toml)
